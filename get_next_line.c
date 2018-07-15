@@ -6,7 +6,7 @@
 /*   By: pthorell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/12 18:50:06 by pthorell          #+#    #+#             */
-/*   Updated: 2018/07/14 19:08:23 by pthorell         ###   ########.fr       */
+/*   Updated: 2018/07/14 19:09:54 by pthorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,9 @@ int					get_next_line(const int fd, char **line)
 {
 	static t_filelist	*filelist;
 	int					rd;
-
+	
+	if (fd < 0)
+		return (-1);
 	if (!filelist || is_unique_fd(fd, filelist))
 	{
 		filelist = new_filelist(fd);
