@@ -6,7 +6,7 @@
 /*   By: pthorell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/12 18:50:06 by pthorell          #+#    #+#             */
-/*   Updated: 2018/07/14 19:09:54 by pthorell         ###   ########.fr       */
+/*   Updated: 2018/07/14 22:09:16 by pthorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,10 @@ int					is_unique_fd(const int fd, t_filelist *list)
 	return (1);
 }
 
+// TODO: return 1 if one line without a line feed
+// TODO: leaks!
+// TODO: multiple fd
+
 int					get_next_line(const int fd, char **line)
 {
 	static t_filelist	*filelist;
@@ -92,11 +96,12 @@ int					get_next_line(const int fd, char **line)
 	{
 		filelist = new_filelist(fd);
 		rd = read_from_file(fd, &filelist);
-		if (rd <= 0)
+		if (rd <= 0)						//
 			return (rd);
 	}
 	// read only when at end of buffer!!
-	*line = ft_strnew(0); // most likely don't change
+	if (!(*line))
+		*line = ft_strnew(0); // most likely don't change
 	while (*(filelist->buf_pos) != '\n')
 	{
 		if (*(filelist->buf_pos))

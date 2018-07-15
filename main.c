@@ -5,49 +5,47 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: pthorell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/12 18:54:09 by pthorell          #+#    #+#             */
-/*   Updated: 2018/07/14 18:48:55 by pthorell         ###   ########.fr       */
+/*   Created: 2018/07/14 19:31:24 by pthorell          #+#    #+#             */
+/*   Updated: 2018/07/14 20:20:38 by pthorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
-
 #include "get_next_line.h"
 
-void	open_and_read(char *file)
-{
-	int fd;
-	char *next_line;
+/*
+** 1 line with 8 chars without Line Feed
+*/
 
-	fd = open(file, O_RDONLY);
-	if (fd == -1)
-		puts("thats bad");
-	else
+int				main(void)
+{
+	char		*line;
+	int			fd;
+	int			ret;
+	int			count_lines;
+	int			errors;
+
+	fd = 0;
+	count_lines = 0;
+	errors = 0;
+	line = NULL;
+	while ((ret = get_next_line(fd, &line)) > 0)
 	{
-		int i = 0;
-		while (get_next_line(42, &next_line) > 0)
-		{
-			puts(next_line);
-			sleep(1);
-		}
+		printf("ret = %d\n", ret);
+		if (count_lines == 0 && strcmp(line, "12345678") != 0)
+			errors++;
+		count_lines++;
+		if (count_lines > 50)
+			break ;
 	}
-}
-
-int	main(void)
-{
-	puts("test 1:");
-	sleep(1);
-	open_and_read("test_file");
-	sleep(1);
-	puts("test 2:");
-	sleep(1);
-	open_and_read("test_file_2");
-	sleep(1);
-	puts("test 3:");
-	sleep(1);
-	open_and_read("test_file_3");
-	
+	if (count_lines != 1)
+		printf("-> must have returned '1' once instead of %d time(s)\n", count_lines);
+	if (errors > 0)
+		printf("-> must have read \"12345678\" instead of \"%s\"\n", line);
+	if (count_lines == 1 && errors == 0)
+		printf("OK\n");
 	return (0);
 }
