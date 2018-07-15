@@ -6,7 +6,7 @@
 /*   By: pthorell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/12 18:50:06 by pthorell          #+#    #+#             */
-/*   Updated: 2018/07/14 18:46:32 by pthorell         ###   ########.fr       */
+/*   Updated: 2018/07/14 19:08:23 by pthorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 
 static t_filelist	*new_filelist(const int fd)
 {
-	int			rd;
 	t_filelist	*list;
 
 	list = malloc(sizeof(t_filelist));
