@@ -45,7 +45,6 @@ static int			read_from_file(const int fd, t_filelist **list)
 	rd = read(fd, (*list)->buf, BUFF_SIZE);
 	if (rd <= 0)
 	{
-		(*list) = NULL;
 		if (rd < 0)
 			return (-1);
 		else
@@ -81,44 +80,43 @@ int					is_unique_fd(const int fd, t_filelist *list)
 	return (1);
 }
 
-// TODO: return 1 if one line without a line feed
-// TODO: leaks!
-// TODO: multiple fd
+
+#include <stdio.h>
 
 int					get_next_line(const int fd, char **line)
 {
 	static t_filelist	*filelist;
 	int					rd;
-	
+
 	if (fd < 0)
 		return (-1);
 	if (!filelist || is_unique_fd(fd, filelist))
 	{
 		filelist = new_filelist(fd);
 		rd = read_from_file(fd, &filelist);
-		if (rd <= 0)						//
+		if (rd <= 0)
 			return (rd);
 	}
-	// read only when at end of buffer!!
-	if (!(*line))
-		*line = ft_strnew(0); // most likely don't change
+	*line = ft_strnew(0);
 	while (*(filelist->buf_pos) != '\n')
 	{
 		if (*(filelist->buf_pos))
 			++(filelist->buf_pos);
-		if (!(*(filelist->buf_pos))) // if we reached the end of the buffer
+		else
 		{
 			*line = ft_strjoin(*line, filelist->buf);
 			rd = read_from_file(fd, &filelist);
-			if (rd <= 0)
-				return (rd);
+			if (rd < 0)
+				return (-1);
+			if (rd == 0 && filelist->buf_pos == filelist->buf)
+				return (0);
+			else if (rd == 0)
+				break ;
 		}
 	}
-	if (*(filelist->buf_pos) == '\n')
-	{
+	if (filelist->buf_pos[0] == '\n')
 		*line = ft_strnjoin(*line, filelist->buf, filelist->buf_pos - filelist->buf);
-		++(filelist->buf_pos);
-	}
+	++(filelist->buf_pos);
 	filelist->buf = filelist->buf_pos;
 	return (1);
 }
