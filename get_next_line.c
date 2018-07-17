@@ -6,7 +6,7 @@
 /*   By: pthorell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/12 18:50:06 by pthorell          #+#    #+#             */
-/*   Updated: 2018/07/15 22:27:01 by pthorell         ###   ########.fr       */
+/*   Updated: 2018/07/16 19:26:34 by pthorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,14 @@
 #include "libft.h"
 #include "get_next_line.h"
 
+#define FL_BUFS (filelist->buf_pos_start)
+#define FL_BUFE (filelist->buf_pos_end)
+
 static t_filelist	*new_filelist(const int fd)
 {
 	t_filelist	*list;
 
-	list = malloc(sizeof(t_filelist)); // malloc not cleared
+	list = malloc(sizeof(t_filelist));
 	if (!list)
 		return (NULL);
 	if (fd < 0)
@@ -30,7 +33,7 @@ static t_filelist	*new_filelist(const int fd)
 		free(list);
 		return (NULL);
 	}
-	list->buf = (char*)malloc(BUFF_SIZE + 1); // malloc not cleared
+	list->buf = (char*)malloc(BUFF_SIZE + 1);
 	if (!(list->buf))
 	{
 		free(list);
@@ -38,7 +41,7 @@ static t_filelist	*new_filelist(const int fd)
 	}
 	list->fd = fd;
 	list->buf_pos_start = list->buf;
-	list->buf_pos_end = list->buf;
+	list->buf_pos_end = NULL;
 	list->next = NULL;
 	list->prev = NULL;
 	return (list);
@@ -48,8 +51,6 @@ static int			read_from_file(const int fd, t_filelist **list)
 {
 	int rd;
 
-	(*list)->buf = (char*)malloc(BUFF_SIZE + 1);
-//	sleep(10);
 	rd = read(fd, (*list)->buf, BUFF_SIZE);
 	if (rd <= 0)
 	{
@@ -64,40 +65,33 @@ static int			read_from_file(const int fd, t_filelist **list)
 	return (1);
 }
 
-char				*ft_strnjoin(char const *s1, char const *s2, size_t n)
+static int			search_filelist(t_filelist **list, t_filelist **tmp, int f)
 {
-	char	*result;
-
-	if (!s1 || !s2)
-		return (NULL);
-	result = ft_strnew(ft_strlen(s1) + n); // malloc not cleared
-	if (!result)
-		return (NULL);
-	result = ft_strcpy(result, s1);
-	result = ft_strncat(result, s2, n);
-	return (result);
+	*tmp = NULL;
+	while (*list)
+	{
+		*tmp = *list;
+		*list = (*list)->prev;
+	}
+	*list = *tmp;
+	while (*list)
+	{
+		if ((*list)->fd == f)
+			return (1);
+		*tmp = *list;
+		*list = (*list)->next;
+	}
+	return (0);
 }
 
-int			open_fd(const int fd, t_filelist **list)
+static int			open_fd(const int fd, t_filelist **list)
 {
 	int			rd;
 	t_filelist	*temp;
 	t_filelist	*add;
 
-	temp = NULL;
-	while (*list)
-	{
-		temp = *list;
-		*list = (*list)->prev;
-	}
-	*list = temp;
-	while (*list)
-	{
-		if ((*list)->fd == fd)
-			return (1);
-		temp = *list;
-		*list = (*list)->next;
-	}
+	if (search_filelist(list, &temp, fd))
+		return (1);
 	if (!temp)
 	{
 		if (!(*list = new_filelist(fd)))
@@ -116,75 +110,31 @@ int			open_fd(const int fd, t_filelist **list)
 	return (rd);
 }
 
-void				del_filelist(t_filelist **list)
-{
-	t_filelist *prev;
-	t_filelist *next;
-
-	prev = (*list)->prev;
-	next = (*list)->next;
-	if ((*list)->buf)
-	{
-		free((*list)->buf);
-		(*list)->buf = NULL;
-	}
-	free(*list);
-	if (prev)
-		prev->next = next;
-	if (next)
-		next->prev = prev;
-}
-
 int					get_next_line(const int fd, char **line)
 {
 	static t_filelist	*filelist;
-	char				*temp;
 	int					rd;
 
-	if (fd < 0)
-		return (-1);
 	if ((rd = open_fd(fd, &filelist)) <= 0)
 		return (rd);
-//	sleep(10);
-	if (*line)
-	{
-		free(*line);
-		*line = NULL;
-	}
-//	*line = ft_strnew(0);
-//	sleep(10);
+	*line = ft_strnew(0);
 	while (*(filelist->buf_pos_end) != '\n')
 	{
-		if (*(filelist->buf_pos_end))
-			++(filelist->buf_pos_end);
-		else
+		((*(filelist->buf_pos_end)) ? ++(filelist->buf_pos_end) : 0);
+		if (!(*(filelist->buf_pos_end)))
 		{
-			temp = ft_strnew(ft_strlen(*line));
-			temp = ft_strcpy(temp, *line);
-			*line = ft_strjoin(temp, filelist->buf_pos_start);
-			free(temp);
+			free_strjoin(line, filelist->buf_pos_start);
 			rd = read_from_file(fd, &filelist);
 			if (rd < 0)
 				return (-1);
-			else if (rd == 0 && filelist->buf_pos_start == filelist->buf_pos_end)
-			{
-				//printf("fd = %d\n", filelist->fd);
+			else if (rd == 0 && FL_BUFS == FL_BUFE)
 				return (0);
-			}
 			else if (rd == 0)
 				break ;
 		}
 	}
-//	sleep(10);
 	if (filelist->buf_pos_end[0] == '\n')
-	{
-		temp = ft_strnew(ft_strlen(*line));
-		temp = ft_strcpy(temp, *line);
-		*line = ft_strnjoin(temp, filelist->buf_pos_start, filelist->buf_pos_end - filelist->buf_pos_start);
-		free(temp);
-	}
-	++(filelist->buf_pos_end);
-	filelist->buf_pos_start = filelist->buf_pos_end;
-//	sleep(10);
+		free_strnjoin(line, FL_BUFS, FL_BUFE - FL_BUFS);
+	filelist->buf_pos_start = ++(filelist->buf_pos_end);
 	return (1);
 }

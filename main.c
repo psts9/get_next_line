@@ -6,7 +6,7 @@
 /*   By: pthorell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/14 19:31:24 by pthorell          #+#    #+#             */
-/*   Updated: 2018/07/15 22:27:12 by pthorell         ###   ########.fr       */
+/*   Updated: 2018/07/16 19:26:40 by pthorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 
 int				main(void)
 {
+	
 	char		*line;
 	int			fd1, fd2, fd3;
 	int			ret;
@@ -31,13 +32,23 @@ int				main(void)
 	count_lines = 0;
 	errors = 0;
 	line = NULL;
-	fd1 = open("test_file", O_RDONLY);
 	int i = 0;
-	while ((ret = get_next_line(fd1, &line)) > 0)
+	int fd = 1;
+	fd1 = open("k", O_RDONLY);
+	while ((ret = get_next_line(1, &line)) > 0)
 	{
-		printf("fd = %d, string = %s\n", fd1, line);
-		sleep(10);
+		puts(line);
 	}
+	puts("yo");
+	while ((ret = get_next_line(fd1, &line)) > 0)
+		puts(line);
+	while ((ret = get_next_line(1, &line)) > 0)
+		puts(line);
+	//while ((ret = get_next_line(fd1, &line)) > 0)
+	//{
+	//	printf("fd = %d, string = %s\n", fd1, line);
+	//	sleep(1000);
+	//}
 	/*
 	while (i++ < 2)
 	{

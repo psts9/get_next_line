@@ -1,30 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_strnjoin.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pthorell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/14 16:45:00 by pthorell          #+#    #+#             */
-/*   Updated: 2018/07/16 19:26:42 by pthorell         ###   ########.fr       */
+/*   Created: 2018/07/16 18:40:50 by pthorell          #+#    #+#             */
+/*   Updated: 2018/07/16 18:42:12 by pthorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# define BUFF_SIZE 4096
-
-typedef struct			s_filelist
+char	*ft_strnjoin(char const *s1, char const *s2, size_t n)
 {
-	char				*buf;
-	int					fd;
-	char				*buf_pos_end;
-	char				*buf_pos_start;
-	struct s_filelist	*next;
-	struct s_filelist	*prev;
-}						t_filelist;
+	char *result;
 
-int					get_next_line(const int fd, char **line);
-
-#endif
+	if (!s1 || !s2)
+		return (NULL);
+	result = ft_strnew(ft_strlen(s1) + n);
+	if (!result)
+		return (NULL);
+	result = ft_strcpy(result, s1);
+	result = ft_strncat(result, s2, n);
+	return (result);
+}

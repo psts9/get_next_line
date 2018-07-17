@@ -1,30 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   free_strjoin.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pthorell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/14 16:45:00 by pthorell          #+#    #+#             */
-/*   Updated: 2018/07/16 19:26:42 by pthorell         ###   ########.fr       */
+/*   Created: 2018/07/16 18:35:40 by pthorell          #+#    #+#             */
+/*   Updated: 2018/07/16 18:40:32 by pthorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include <stdlib.h>
+#include "libft.h"
 
-# define BUFF_SIZE 4096
-
-typedef struct			s_filelist
+void	free_strjoin(char **str, const char *src)
 {
-	char				*buf;
-	int					fd;
-	char				*buf_pos_end;
-	char				*buf_pos_start;
-	struct s_filelist	*next;
-	struct s_filelist	*prev;
-}						t_filelist;
+	char *temp;
 
-int					get_next_line(const int fd, char **line);
-
-#endif
+	temp = *str;
+	*str = ft_strjoin(*str, src);
+	free(temp);
+}
