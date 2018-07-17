@@ -6,7 +6,7 @@
 /*   By: pthorell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/14 16:45:00 by pthorell          #+#    #+#             */
-/*   Updated: 2018/07/16 19:26:42 by pthorell         ###   ########.fr       */
+/*   Updated: 2018/07/16 19:34:58 by pthorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,6 @@ typedef struct			s_filelist
 	struct s_filelist	*prev;
 }						t_filelist;
 
-int					get_next_line(const int fd, char **line);
+int						get_next_line(const int fd, char **line);
 
 #endif
