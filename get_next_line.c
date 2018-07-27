@@ -6,7 +6,7 @@
 /*   By: pthorell <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/12 18:50:06 by pthorell          #+#    #+#             */
-/*   Updated: 2018/07/16 19:26:34 by pthorell         ###   ########.fr       */
+/*   Updated: 2018/07/26 18:04:10 by pthorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,10 +115,12 @@ int					get_next_line(const int fd, char **line)
 	static t_filelist	*filelist;
 	int					rd;
 
+	if (!line)
+		return (-1);
 	if ((rd = open_fd(fd, &filelist)) <= 0)
 		return (rd);
 	*line = ft_strnew(0);
-	while (*(filelist->buf_pos_end) != '\n')
+	while ((*(filelist->buf_pos_end) != '\n') && rd != 0)
 	{
 		((*(filelist->buf_pos_end)) ? ++(filelist->buf_pos_end) : 0);
 		if (!(*(filelist->buf_pos_end)))
@@ -129,8 +131,6 @@ int					get_next_line(const int fd, char **line)
 				return (-1);
 			else if (rd == 0 && FL_BUFS == FL_BUFE)
 				return (0);
-			else if (rd == 0)
-				break ;
 		}
 	}
 	if (filelist->buf_pos_end[0] == '\n')
